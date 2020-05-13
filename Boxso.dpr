@@ -89,8 +89,11 @@ begin
       else
         sResponse := '';
     except
-      ShowMessage('Error');
-      sResponse := '';
+      on E: exception do
+      begin
+        ShowMessage('Error - Create order');
+        sResponse := '';
+      end;
     end;
   finally
     FreeAndNil(http);
@@ -122,8 +125,11 @@ begin
       sResponse := jsonObj.Get(2).JsonValue.ToString + ';' +
         jsonObj.Get(1).JsonValue.Value;
     except
-      ShowMessage('error');
-      sResponse := ';'
+      on E: exception do
+      begin
+        ShowMessage('Error - Check payment');
+        sResponse := ';';
+      end;
     end;
   finally
     FreeAndNil(http);
@@ -168,7 +174,7 @@ begin
     except
       on E: exception do
       begin
-        ShowMessage(E.Message);
+        ShowMessage('Error - Check credentials');
         sResponse := 'false;;';
       end;
     end;
@@ -194,7 +200,11 @@ begin
 
       sResponse := http.Get(sUrl);
     except
-      sResponse := '';
+      on E: exception do
+      begin
+        ShowMessage('Error - List payment');
+        sResponse := '';
+      end;
     end;
   finally
     FreeAndNil(http);
