@@ -4,7 +4,7 @@ object FrmPrincipal: TFrmPrincipal
   AlphaBlendValue = 100
   BorderStyle = bsToolWindow
   Caption = 'Boxso'
-  ClientHeight = 587
+  ClientHeight = 607
   ClientWidth = 1023
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -3652,7 +3652,7 @@ object FrmPrincipal: TFrmPrincipal
   end
   object sbInicio: TStatusBar
     Left = 0
-    Top = 568
+    Top = 588
     Width = 1023
     Height = 19
     Panels = <
@@ -3791,6 +3791,21 @@ object FrmPrincipal: TFrmPrincipal
         TabOrder = 0
         OnClick = btnCancelarClick
       end
+      object Button1: TButton
+        Left = 216
+        Top = 47
+        Width = 41
+        Height = 29
+        Caption = '<>'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 1
+        OnClick = Button1Click
+      end
     end
   end
   object gbRecebimentos: TGroupBox
@@ -3839,6 +3854,7 @@ object FrmPrincipal: TFrmPrincipal
           item
             Expanded = False
             FieldName = 'DataHora'
+            Title.Caption = 'Data Hora'
             Width = 170
             Visible = True
           end

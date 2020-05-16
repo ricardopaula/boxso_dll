@@ -9,8 +9,8 @@ uses
   DBClient, Grids, DBGrids, Dialogs;
 
 type
-//  TShowForm = procedure;
-//  TShowFormModal = function :integer;
+  // TShowForm = procedure;
+  // TShowFormModal = function :integer;
 
   TFrmPrincipal = class(TForm)
     sbInicio: TStatusBar;
@@ -43,6 +43,7 @@ type
     GroupBox1: TGroupBox;
     DBGrid1: TDBGrid;
     btnFlutuante: TImage;
+    Button1: TButton;
     procedure btnPagarClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ticonDblClick(Sender: TObject);
@@ -56,31 +57,33 @@ type
       Shift: TShiftState);
     procedure listarultimosClick(Sender: TObject);
     procedure btnVoltarClick(Sender: TObject);
-    procedure btnFlutuanteStartDrag(Sender: TObject;
-      var DragObject: TDragObject);
+    procedure btnFlutuanteStartDrag
+      (Sender: TObject; var DragObject: TDragObject);
     procedure btnFlutuanteMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure btnFlutuanteDblClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure Button1Click(Sender: TObject);
   private
-    bCancelado : Boolean;
+    bCancelado: Boolean;
     sApiId: String;
     sAPIKey: String;
     iTentativas: Integer;
     uuidRecebimento: String;
 
-    fLeft, fTop : integer;
-    bLeft, bTop : integer;
+    fLeft, fTop: Integer;
+    bLeft, bTop: Integer;
 
     QRCodeBitmap: TBitmap;
 
-    bVisivel : boolean;
+    bVisivel: Boolean;
 
-//    ShowForm : TShowForm;
-//    ShowFormModal : TShowFormModal;
+    // ShowForm : TShowForm;
+    // ShowFormModal : TShowFormModal;
 
     procedure esconderForm;
     procedure mostrarForm;
+    function formatDate(sDatetime: String): String;
     function strValorNoSeparador(s: String; iQualPosicao: Integer;
       sSeparador: String = ';'): String;
     procedure exibeQRCode(sQRCode: String; sCotacao: String);
@@ -99,12 +102,12 @@ type
   public
     { Public declarations }
   end;
-function MakeOrder(sApiId: String; sSenha: String; rValorBRL: Real)
-  : Pchar; stdcall; external 'Boxso.dll' name 'MakeOrder';
 
-function CheckPayment(sApiId: String; sSenha: String;
-  uuidRecebimento: String): Pchar; stdcall;
-external 'Boxso.dll' name 'CheckPayment';
+function MakeOrder(sApiId: String; sSenha: String; rValorBRL: Real): Pchar;
+  stdcall; external 'Boxso.dll' name 'MakeOrder';
+
+function CheckPayment(sApiId: String; sSenha: String; uuidRecebimento: String)
+  : Pchar; stdcall; external 'Boxso.dll' name 'CheckPayment';
 
 function ListPayment(sApiId: String; sSenha: String): Pchar; stdcall;
 external 'Boxso.dll' name 'ListPayment';
@@ -135,12 +138,13 @@ procedure TFrmPrincipal.btnPagarClick(Sender: TObject);
 var
   sSolicitacao: String;
 begin
-  if (trim(edtValor.Text) <> '')  then
+  if (trim(edtValor.Text) <> '') then
   begin
-    sSolicitacao := MakeOrder(sApiId, sAPIKey, StrToFloat(TrocaPtoPVirg(edtValor.Text)));
+    sSolicitacao := MakeOrder
+      (sApiId, sAPIKey, StrToFloat(TrocaPtoPVirg(edtValor.Text)));
 
-//    ShowMessage('Solicitacao');
-//    ShowMessage(sSolicitacao);
+    // ShowMessage('Solicitacao');
+    // ShowMessage(sSolicitacao);
 
     if sSolicitacao <> '' then
     begin
@@ -164,6 +168,14 @@ begin
   inicio;
 end;
 
+procedure TFrmPrincipal.Button1Click(Sender: TObject);
+begin
+  lblVerificando.Caption := 'Verificando';
+  lblVerificando.Font.Color := clBlack;
+  lblVerificando.Font.Style := [];
+  tmr.Enabled := True;
+end;
+
 procedure TFrmPrincipal.edtValorKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
@@ -184,7 +196,7 @@ procedure TFrmPrincipal.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   CanClose := False;
 
-  if bVisivel = true then
+  if bVisivel = True then
     mostrarFlutuante
   else
     esconderForm;
@@ -195,7 +207,7 @@ var
   sIni: String;
   sRet: String;
 begin
-  bVisivel := true;
+  bVisivel := True;
 
   sIni := ExtractFilePath(Application.ExeName) + 'boxsopay.ini';
   QRCodeBitmap := TBitmap.Create;
@@ -231,8 +243,7 @@ end;
 procedure TFrmPrincipal.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if (Key = 27 )and
-     (btnFlutuante.Visible = false) then
+  if (Key = 27) and (btnFlutuante.Visible = False) then
     Close;
 end;
 
@@ -243,27 +254,27 @@ end;
 
 procedure TFrmPrincipal.btnFlutuanteDblClick(Sender: TObject);
 begin
-ticonDblClick(Sender);
+  ticonDblClick(Sender);
 end;
 
 procedure TFrmPrincipal.btnFlutuanteMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  MovimentaObject(sender,button,shift,x,y,FrmPrincipal);
+  MovimentaObject(Sender, Button, Shift, X, Y, FrmPrincipal);
 end;
 
-procedure TFrmPrincipal.btnFlutuanteStartDrag(Sender: TObject;
-  var DragObject: TDragObject);
+procedure TFrmPrincipal.btnFlutuanteStartDrag
+  (Sender: TObject; var DragObject: TDragObject);
 const
-   sc_DragMove = $f012;
+  sc_DragMove = $F012;
 begin
-    ReleaseCapture;
-    Perform(wm_SysCommand, sc_DragMove, 0);
+  ReleaseCapture;
+  Perform(wm_SysCommand, sc_DragMove, 0);
 end;
 
 procedure TFrmPrincipal.ticonDblClick(Sender: TObject);
 begin
-  if bVisivel = true then
+  if bVisivel = True then
     esconderFlutuante
   else
     mostrarForm;
@@ -277,15 +288,15 @@ begin
 
   if bCancelado = True then
   begin
-   bCancelado := False;
-   exit;
+    bCancelado := False;
+    exit;
   end;
 
   Application.ProcessMessages;
   sSolicitacao := CheckPayment(sApiId, sAPIKey, uuidRecebimento);
   Application.ProcessMessages;
 
-//  ShowMessage(sSolicitacao);
+  // ShowMessage(sSolicitacao);
 
   if strValorNoSeparador(sSolicitacao, 1) = 'true' then
   begin
@@ -310,11 +321,9 @@ begin
       lblVerificando.Font.Style := [fsBold];
       lblVerificando.Caption := 'Pagamento não identificado';
       Application.ProcessMessages;
-      Sleep(2000);
-      inicio;
     end
     else
-      tmr.Enabled := true;
+      tmr.Enabled := True;
   end;
 end;
 
@@ -353,6 +362,19 @@ begin
   Application.Minimize;
   ticon.HideMainForm;
 end;
+
+function TFrmPrincipal.formatDate(sDatetime : String) : String;
+var
+  sDate : String;
+  sTime : String;
+begin
+
+  sDate := Copy(sDatetime,9,2) +'/' + Copy(sDatetime,6,2)+ '/'+Copy(sDatetime,0,4);
+  sTime := Copy(sDatetime,12,2) +':' + Copy(sDatetime,15,2)+ ':'+Copy(sDatetime,18,2);
+
+  Result := sDate+' '+sTime;
+end;
+
 
 function TFrmPrincipal.strValorNoSeparador(s: String; iQualPosicao: Integer;
   sSeparador: String = ';'): String;
@@ -436,7 +458,7 @@ begin
   pbQRCode.Repaint;
 
   iTentativas := 60;
-  tmr.Enabled := true;
+  tmr.Enabled := True;
 end;
 
 function TFrmPrincipal.TrocaPtoPVirg(Valor: string): String;
@@ -457,29 +479,30 @@ end;
 
 procedure TFrmPrincipal.inicio;
 begin
-  gbAguardando.Visible   := False;
-  gbReceber.Visible      := true;
+
+  gbAguardando.Visible := False;
+  gbReceber.Visible := True;
   gbRecebimentos.Visible := False;
 
-  gbReceber.Top := 8;
-  gbReceber.Left := 8;
+   gbReceber.Top := 8;
+   gbReceber.Left := 8;
 
-  gbAguardando.Top  := 8;
-  gbAguardando.Left := 8;
+   gbAguardando.Top  := 8;
+   gbAguardando.Left := 8;
 
-  gbRecebimentos.Top  := 8;
-  gbRecebimentos.Left := 8;
+   gbRecebimentos.Top  := 8;
+   gbRecebimentos.Left := 8;
 
-  FrmPrincipal.Width  := 340;
-  FrmPrincipal.Height := 260;
+   FrmPrincipal.Width  := 340;
+   FrmPrincipal.Height := 260;
 
   lblVerificando.Caption := 'Verificando';
   lblVerificando.Font.Color := clBlack;
   lblVerificando.Font.Style := [];
 
   uuidRecebimento := '';
-  iTentativas    := 60;
-  edtValor.Text  := '';
+  iTentativas := 60;
+  edtValor.Text := '';
 
   try
     edtValor.SetFocus;
@@ -491,8 +514,8 @@ end;
 
 procedure TFrmPrincipal.recebendo;
 begin
-  gbAguardando.Visible   := True;
-  gbReceber.Visible      := False;
+  gbAguardando.Visible := True;
+  gbReceber.Visible := False;
   gbRecebimentos.Visible := False;
 
   FrmPrincipal.Height := 440;
@@ -500,8 +523,8 @@ end;
 
 procedure TFrmPrincipal.listando;
 begin
-  gbAguardando.Visible   := False;
-  gbReceber.Visible      := False;
+  gbAguardando.Visible := False;
+  gbReceber.Visible := False;
   gbRecebimentos.Visible := True;
 
   FrmPrincipal.Height := 440;
@@ -509,30 +532,36 @@ end;
 
 procedure TFrmPrincipal.listarultimosClick(Sender: TObject);
 var
-  sRetorno : String;
-  jsonObj   : TJSONObject;
-  vConteudo : TJSONObject;
+  sRetorno, AJsonText: String;
+  jsonObj, vJson: TJSONObject;
+  vConteudo: TJSONObject;
   vPagamentos: TJSONArray;
-  vpagamento : TJSONObject;
-  i : integer;
+  vpagamento: TJSONObject;
+  i: Integer;
+
+  a: STring;
+  b: TBytes;
 begin
   sRetorno := ListPayment(sApiId, sAPIKey);
 
   if sRetorno <> '' then
   begin
-    jsonObj     := TJsonObject(TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(StripNonJson(sRetorno)),0));
-    vConteudo   := TJSONObject(jsonObj.Get(1).JsonValue);
-    vPagamentos := TJSONArray(vConteudo.Get(0).JsonValue);
+    AJsonText := '{"pagamentos": '+StripNonJson(sRetorno)+'}';
+
+    vJson := TJsonObject(TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(StripNonJson(AJsonText)),0));
+
+    vPagamentos := TJSONArray(vJson.Get(0).JsonValue);
 
     cdsRecebimentos.EmptyDataSet;
 
-    for i := 0 to vPagamentos.Size-1 do
+    for i := 0 to vPagamentos.Size - 1 do
     begin
-      vpagamento := TJsonObject(vPagamentos.Get(i));
+      vpagamento := TJSONObject(vPagamentos.Get(i));
 
       cdsRecebimentos.Append;
-      cdsRecebimentosDataHora.AsString := vpagamento.Get(10).JsonValue.Value;
-      cdsRecebimentosvalor.AsString    := 'R$ '+vpagamento.Get(3).JsonValue.Value;
+      cdsRecebimentosDataHora.AsString := formatDate(vpagamento.Get(9).JsonValue.Value);
+      cdsRecebimentosvalor.AsString := 'R$ ' + vpagamento.Get(2)
+        .JsonValue.Value;
       cdsRecebimentos.Post;
     end;
     listando;
@@ -541,7 +570,7 @@ end;
 
 procedure TFrmPrincipal.aguardando;
 begin
-  gbAguardando.Visible := true;
+  gbAguardando.Visible := True;
   gbReceber.Visible := False;
 
   gbAguardando.Top := 8;
@@ -551,10 +580,10 @@ end;
 function TFrmPrincipal.StripNonJson(s: string): string;
 var
   ch: char;
-  inString: boolean;
+  inString: Boolean;
 begin
   Result := '';
-  inString := false;
+  inString := False;
   for ch in s do
   begin
     if ch = '"' then
@@ -565,10 +594,9 @@ begin
   end;
 end;
 
-
 procedure TFrmPrincipal.mostrarFlutuante;
 begin
-  fTop  := FrmPrincipal.Top;
+  fTop := FrmPrincipal.Top;
   fLeft := FrmPrincipal.Left;
 
   if (bTop = 0) or (bLeft = 0) then
@@ -577,66 +605,66 @@ begin
     bLeft := fLeft;
   end;
 
-  FrmPrincipal.Top  := bTop;
+  FrmPrincipal.Top := bTop;
   FrmPrincipal.Left := bLeft;
 
-  FrmPrincipal.BorderStyle  := bsNone;
+  FrmPrincipal.BorderStyle := bsNone;
   FrmPrincipal.Height := 32;
-  FrmPrincipal.Width  := 32;
+  FrmPrincipal.Width := 32;
 
-  gbReceber.Visible         := false;
-  gbAguardando.Visible      := false;
-  gbRecebimentos.Visible    := false;
+  gbReceber.Visible := False;
+  gbAguardando.Visible := False;
+  gbRecebimentos.Visible := False;
   FrmPrincipal.Menu := nil;
-  sbInicio.Visible := false;
-
+  sbInicio.Visible := False;
 
   btnFlutuante.Top := 0;
   btnFlutuante.Left := 0;
-  btnFlutuante.Visible := true;
+  btnFlutuante.Visible := True;
 
-  SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0,
-                     SWP_NoMove or SWP_NoSize);
-  FrmPrincipal.AlphaBlend := true;
+  SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+  FrmPrincipal.AlphaBlend := True;
 end;
 
 procedure TFrmPrincipal.esconderFlutuante;
 begin
-  bTop  := FrmPrincipal.Top;
+  bTop := FrmPrincipal.Top;
   bLeft := FrmPrincipal.Left;
 
-  FrmPrincipal.Top  := fTop;
+  FrmPrincipal.Top := fTop;
   FrmPrincipal.Left := fLeft;
 
   FrmPrincipal.BorderStyle := bsToolWindow;
   FrmPrincipal.Menu := MainMenu1;
   sbInicio.Visible := True;
-  btnFlutuante.Visible     := false;
+  btnFlutuante.Visible := False;
   inicio;
 
-  SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0,
-                       SWP_NoMove or SWP_NoSize);
+  SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
   FrmPrincipal.AlphaBlend := False;
 end;
 
-procedure TFrmPrincipal.MovimentaObject(Sender:TObject;Button:TMouseButton;Shift:TShiftState;X,Y:Integer;Formulario:TForm);
-var ObjectPos,MousePosMov:TPoint;Pt:TPoint;fHandle:HWND;
+procedure TFrmPrincipal.MovimentaObject(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer; Formulario: TForm);
+var
+  ObjectPos, MousePosMov: TPoint;
+  Pt: TPoint;
+  fHandle: HWND;
 begin
   GetCursorPos(Pt);
-  ObjectPos.X:=Formulario.Left;
-  ObjectPos.Y:=Formulario.Top;
-  if(Sender is TForm)then
-    fHandle:=TWinControl(Sender).Handle
+  ObjectPos.X := Formulario.Left;
+  ObjectPos.Y := Formulario.Top;
+  if (Sender is TForm) then
+    fHandle := TWinControl(Sender).Handle
   else
-    fHandle:=TWinControl(Sender).Parent.Handle;
-  while DragDetect(fHandle,ObjectPos) do
+    fHandle := TWinControl(Sender).Parent.Handle;
+  while DragDetect(fHandle, ObjectPos) do
   begin
     GetCursorPos(MousePosMov);
-    Formulario.Left:=MousePosMov.X-X-3;
-    Formulario.Top:=MousePosMov.Y-Y-3;
+    Formulario.Left := MousePosMov.X - X - 3;
+    Formulario.Top := MousePosMov.Y - Y - 3;
     Application.ProcessMessages;
   end;
 end;
 
 end.
-

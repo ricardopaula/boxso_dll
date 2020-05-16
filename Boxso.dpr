@@ -33,8 +33,8 @@ end;
 procedure MakeConnection();
 begin
   http := TIdHTTP.Create(nil);
-  http.ConnectTimeout := 50000;
-  http.ReadTimeout := 50000;
+  http.ConnectTimeout := 120000;
+  http.ReadTimeout := 120000;
   http.Request.UserAgent := 'Mozilla/3.0';
 end;
 
@@ -193,7 +193,7 @@ begin
     try
       MakeConnection;
 
-      sUrl := sDefaultUrl + 'api/listar-recebimento';
+      sUrl := sDefaultUrl + '/orders/latest';
       http.Request.CustomHeaders.Add('Content-Type:application/json');
       http.Request.CustomHeaders.Add('apiid:' + sApiId);
       http.Request.CustomHeaders.Add('apikey:' + sApiKey);
@@ -216,7 +216,7 @@ exports MakeOrder, CheckPayment, ListPayment,
   CheckCredentials;
 
 begin
-  // sDefaultUrl := 'https://boxso.com.br/api';
-  sDefaultUrl := 'http://192.168.0.22:3333/api';
+  sDefaultUrl := 'https://boxso.com.br/api';
+//  sDefaultUrl := 'http://192.168.0.22:3333/api';
 end.
 
