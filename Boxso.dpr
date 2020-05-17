@@ -6,11 +6,17 @@ uses
   Dialogs,
   IdHTTP,
   DBXJSON,
+  IdIOHandler,
+  IdIOHandlerSocket,
+  IdIOHandlerStack,
+  IdSSL,
+  IdSSLOpenSSL,
   Character;
 {$R *.res}
 
 var
   http: TIdHTTP;
+  ssl: TIdSSLIOHandlerSocketOpenSSL;
   sDefaultUrl: String;
 
 function StripNonJson(s: string): pchar;
@@ -33,6 +39,9 @@ end;
 procedure MakeConnection();
 begin
   http := TIdHTTP.Create(nil);
+  ssl := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+
+  http.IOHandler := ssl;
   http.ConnectTimeout := 120000;
   http.ReadTimeout := 120000;
   http.Request.UserAgent := 'Mozilla/3.0';
@@ -152,6 +161,9 @@ begin
       http.Request.CustomHeaders.Add('apiid:' + sApiId);
       http.Request.CustomHeaders.Add('apikey:' + sApiKey);
 
+//      ShowMessage(surl);
+//      ShowMessage(sApiId);
+//      ShowMessage(sApiKey);
       sResponse := http.Get(sUrl);
 
       if http.ResponseCode = 200 then
@@ -175,6 +187,7 @@ begin
       on E: exception do
       begin
         ShowMessage('Error - Check credentials');
+        ShowMessage(E.Message);
         sResponse := 'false;;';
       end;
     end;
