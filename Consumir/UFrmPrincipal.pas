@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  StdCtrls, ExtCtrls, Menus, CoolTrayIcon, Spin, StrUtils, ComCtrls,
+  StdCtrls, ExtCtrls, Menus, Spin, StrUtils, ComCtrls, System.JSON,
   IdBaseComponent, IdAntiFreezeBase, IdAntiFreeze, DBXJSON, Character, DB,
   DBClient, Grids, DBGrids, Dialogs;
 
@@ -19,7 +19,6 @@ type
     Label5: TLabel;
     btnPagar: TButton;
     edtValor: TEdit;
-    ticon: TCoolTrayIcon;
     popMenuApp: TPopupMenu;
     Encerrar1: TMenuItem;
     MainMenu1: TMainMenu;
@@ -42,7 +41,6 @@ type
     btnVoltar: TButton;
     GroupBox1: TGroupBox;
     DBGrid1: TDBGrid;
-    btnFlutuante: TImage;
     Button1: TButton;
     procedure btnPagarClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -103,16 +101,16 @@ type
     { Public declarations }
   end;
 
-function MakeOrder(sApiId: String; sSenha: String; rValorBRL: Real): Pchar;
+function MakeOrder(rValorBRL: Real): Pchar;
   stdcall; external 'Boxso.dll' name 'MakeOrder';
 
-function CheckPayment(sApiId: String; sSenha: String; uuidRecebimento: String)
+function CheckPayment(uuidRecebimento: String)
   : Pchar; stdcall; external 'Boxso.dll' name 'CheckPayment';
 
-function ListPayment(sApiId: String; sSenha: String): Pchar; stdcall;
+function ListPayment(): Pchar; stdcall;
 external 'Boxso.dll' name 'ListPayment';
 
-function CheckCredentials(sApiId: String; sSenha: String): Pchar; stdcall;
+function CheckCredentials(): Pchar; stdcall;
 external 'Boxso.dll' name 'CheckCredentials';
 
 var
@@ -141,7 +139,7 @@ begin
   if (trim(edtValor.Text) <> '') then
   begin
     sSolicitacao := MakeOrder
-      (sApiId, sAPIKey, StrToFloat(TrocaPtoPVirg(edtValor.Text)));
+      (StrToFloat(TrocaPtoPVirg(edtValor.Text)));
 
     // ShowMessage('Solicitacao');
     // ShowMessage(sSolicitacao);
@@ -194,12 +192,12 @@ end;
 
 procedure TFrmPrincipal.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  CanClose := False;
-
-  if bVisivel = True then
-    mostrarFlutuante
-  else
-    esconderForm;
+//  CanClose := False;
+//
+//  if bVisivel = True then
+//    mostrarFlutuante
+//  else
+//    esconderForm;
 end;
 
 procedure TFrmPrincipal.FormCreate(Sender: TObject);
@@ -217,7 +215,7 @@ begin
     sApiId := restoreIniValue(sIni, 'acesso', 'apiid', '');
     sAPIKey := restoreIniValue(sIni, 'acesso', 'apikey', '');
 
-    sRet := CheckCredentials(sApiId, sAPIKey);
+    sRet := CheckCredentials();
 
     if strValorNoSeparador(sRet, 1) = 'CREDENTIALS_OK' then
     begin
@@ -243,8 +241,8 @@ end;
 procedure TFrmPrincipal.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if (Key = 27) and (btnFlutuante.Visible = False) then
-    Close;
+//  if (Key = 27) and (btnFlutuante.Visible = False) then
+//    Close;
 end;
 
 procedure TFrmPrincipal.FormShow(Sender: TObject);
@@ -293,7 +291,7 @@ begin
   end;
 
   Application.ProcessMessages;
-  sSolicitacao := CheckPayment(sApiId, sAPIKey, uuidRecebimento);
+  sSolicitacao := CheckPayment(uuidRecebimento);
   Application.ProcessMessages;
 
   // ShowMessage(sSolicitacao);
@@ -330,7 +328,7 @@ end;
 procedure TFrmPrincipal.mostrarForm;
 begin
   inicio;
-  ticon.ShowMainForm;
+//  ticon.ShowMainForm;
   Application.Restore;
 end;
 
@@ -360,7 +358,7 @@ end;
 procedure TFrmPrincipal.esconderForm;
 begin
   Application.Minimize;
-  ticon.HideMainForm;
+//  ticon.HideMainForm;
 end;
 
 function TFrmPrincipal.formatDate(sDatetime : String) : String;
@@ -542,7 +540,7 @@ var
   a: STring;
   b: TBytes;
 begin
-  sRetorno := ListPayment(sApiId, sAPIKey);
+  sRetorno := ListPayment();
 
   if sRetorno <> '' then
   begin
@@ -618,9 +616,9 @@ begin
   FrmPrincipal.Menu := nil;
   sbInicio.Visible := False;
 
-  btnFlutuante.Top := 0;
-  btnFlutuante.Left := 0;
-  btnFlutuante.Visible := True;
+//  btnFlutuante.Top := 0;
+//  btnFlutuante.Left := 0;
+//  btnFlutuante.Visible := True;
 
   SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
   FrmPrincipal.AlphaBlend := True;
@@ -637,7 +635,7 @@ begin
   FrmPrincipal.BorderStyle := bsToolWindow;
   FrmPrincipal.Menu := MainMenu1;
   sbInicio.Visible := True;
-  btnFlutuante.Visible := False;
+//  btnFlutuante.Visible := False;
   inicio;
 
   SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
