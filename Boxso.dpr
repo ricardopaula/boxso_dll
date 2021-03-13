@@ -13,13 +13,17 @@ uses
   IdIOHandlerStack,
   IdSSL,
   IdSSLOpenSSL,
-  Character;
+  Character,
+  uLibINI in 'uLibINI.pas';
 {$R *.res}
 
 var
   http: TIdHTTP;
   ssl: TIdSSLIOHandlerSocketOpenSSL;
   sDefaultUrl: String;
+  sIni: String;
+  sApiId: String;
+  sApiKey: String;
 
 function StripNonJson(s: string): pchar;
 var
@@ -64,7 +68,7 @@ begin
   Result := sValue;
 end;
 
-function MakeOrder(sApiId: String; sApiKey: String; rBRLValue: Real) : pchar; stdcall;
+function MakeOrder(rBRLValue: Real) : pchar; stdcall;
 var
   sUrl: String;
   sBody: String;
@@ -114,7 +118,7 @@ begin
   end;
 end;
 
-function CheckPayment(sApiId: String; sApiKey: String; sUuid: String): pchar; stdcall;
+function CheckPayment(sUuid: String): pchar; stdcall;
 var
   sUrl: String;
   sResponse: String;
@@ -149,7 +153,7 @@ begin
   end;
 end;
 
-function CheckCredentials(sApiId: String; sApiKey: String): pchar; stdcall;
+function CheckCredentials(): pchar; stdcall;
 var
   sUrl: String;
   sResponse: String;
@@ -165,6 +169,9 @@ begin
       http.Request.CustomHeaders.Add('apikey:' + sApiKey);
 
 //      ShowMessage(surl);
+//      ShowMessage(GetCurrentDir);
+//      ShowMessage(sIni);
+//
 //      ShowMessage(sApiId);
 //      ShowMessage(sApiKey);
       sResponse := http.Get(sUrl);
@@ -200,7 +207,7 @@ begin
   end;
 end;
 
-function ListPayment(sApiId: String; sApiKey: String): pchar; stdcall;
+function ListPayment(): pchar; stdcall;
 var
   sUrl: String;
   sResponse: String;
@@ -234,5 +241,11 @@ exports MakeOrder, CheckPayment, ListPayment,
 begin
   sDefaultUrl := 'https://boxso.com.br/api';
 //  sDefaultUrl := 'http://192.168.0.22:3333/api';
+
+  sIni := GetCurrentDir + '\boxsopay.ini';
+
+  sApiId := restoreIniValue(sIni, 'acesso', 'apiid', '');
+  sApiKey := restoreIniValue(sIni, 'acesso', 'apikey', '');
+
 end.
 

@@ -101,16 +101,16 @@ type
     { Public declarations }
   end;
 
-function MakeOrder(sApiId: String; sSenha: String; rValorBRL: Real): Pchar;
+function MakeOrder(rValorBRL: Real): Pchar;
   stdcall; external 'Boxso.dll' name 'MakeOrder';
 
-function CheckPayment(sApiId: String; sSenha: String; uuidRecebimento: String)
+function CheckPayment(uuidRecebimento: String)
   : Pchar; stdcall; external 'Boxso.dll' name 'CheckPayment';
 
-function ListPayment(sApiId: String; sSenha: String): Pchar; stdcall;
+function ListPayment(): Pchar; stdcall;
 external 'Boxso.dll' name 'ListPayment';
 
-function CheckCredentials(sApiId: String; sSenha: String): Pchar; stdcall;
+function CheckCredentials(): Pchar; stdcall;
 external 'Boxso.dll' name 'CheckCredentials';
 
 var
@@ -139,7 +139,7 @@ begin
   if (trim(edtValor.Text) <> '') then
   begin
     sSolicitacao := MakeOrder
-      (sApiId, sAPIKey, StrToFloat(TrocaPtoPVirg(edtValor.Text)));
+      (StrToFloat(TrocaPtoPVirg(edtValor.Text)));
 
     // ShowMessage('Solicitacao');
     // ShowMessage(sSolicitacao);
@@ -215,7 +215,7 @@ begin
     sApiId := restoreIniValue(sIni, 'acesso', 'apiid', '');
     sAPIKey := restoreIniValue(sIni, 'acesso', 'apikey', '');
 
-    sRet := CheckCredentials(sApiId, sAPIKey);
+    sRet := CheckCredentials();
 
     if strValorNoSeparador(sRet, 1) = 'CREDENTIALS_OK' then
     begin
@@ -291,7 +291,7 @@ begin
   end;
 
   Application.ProcessMessages;
-  sSolicitacao := CheckPayment(sApiId, sAPIKey, uuidRecebimento);
+  sSolicitacao := CheckPayment(uuidRecebimento);
   Application.ProcessMessages;
 
   // ShowMessage(sSolicitacao);
@@ -540,7 +540,7 @@ var
   a: STring;
   b: TBytes;
 begin
-  sRetorno := ListPayment(sApiId, sAPIKey);
+  sRetorno := ListPayment();
 
   if sRetorno <> '' then
   begin

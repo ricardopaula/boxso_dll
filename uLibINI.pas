@@ -5,7 +5,7 @@ Criado em 11-08-2010
 
 unit uLibINI;
 interface
-uses IniFiles, Forms, SysUtils, Classes;
+uses IniFiles, Vcl.Forms, SysUtils, Classes;
 
 // grava informacoes em arquivo ini
 procedure storeIniValue(sFile  : String; sSection: String; sVariable: String; vValue: String);  Overload;
