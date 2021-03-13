@@ -3,7 +3,9 @@ library Boxso;
 uses
   SysUtils,
   Classes,
-  Dialogs,
+  Vcl.Dialogs,
+  System.JSON,
+  System.Generics.Collections,
   IdHTTP,
   DBXJSON,
   IdIOHandler,
@@ -101,6 +103,7 @@ begin
       on E: exception do
       begin
         ShowMessage('Error - Create order');
+        ShowMessage(E.Message);
         sResponse := '';
       end;
     end;

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  StdCtrls, ExtCtrls, Menus, CoolTrayIcon, Spin, StrUtils, ComCtrls,
+  StdCtrls, ExtCtrls, Menus, Spin, StrUtils, ComCtrls, System.JSON,
   IdBaseComponent, IdAntiFreezeBase, IdAntiFreeze, DBXJSON, Character, DB,
   DBClient, Grids, DBGrids, Dialogs;
 
@@ -19,7 +19,6 @@ type
     Label5: TLabel;
     btnPagar: TButton;
     edtValor: TEdit;
-    ticon: TCoolTrayIcon;
     popMenuApp: TPopupMenu;
     Encerrar1: TMenuItem;
     MainMenu1: TMainMenu;
@@ -42,7 +41,6 @@ type
     btnVoltar: TButton;
     GroupBox1: TGroupBox;
     DBGrid1: TDBGrid;
-    btnFlutuante: TImage;
     Button1: TButton;
     procedure btnPagarClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -194,12 +192,12 @@ end;
 
 procedure TFrmPrincipal.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  CanClose := False;
-
-  if bVisivel = True then
-    mostrarFlutuante
-  else
-    esconderForm;
+//  CanClose := False;
+//
+//  if bVisivel = True then
+//    mostrarFlutuante
+//  else
+//    esconderForm;
 end;
 
 procedure TFrmPrincipal.FormCreate(Sender: TObject);
@@ -243,8 +241,8 @@ end;
 procedure TFrmPrincipal.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if (Key = 27) and (btnFlutuante.Visible = False) then
-    Close;
+//  if (Key = 27) and (btnFlutuante.Visible = False) then
+//    Close;
 end;
 
 procedure TFrmPrincipal.FormShow(Sender: TObject);
@@ -330,7 +328,7 @@ end;
 procedure TFrmPrincipal.mostrarForm;
 begin
   inicio;
-  ticon.ShowMainForm;
+//  ticon.ShowMainForm;
   Application.Restore;
 end;
 
@@ -360,7 +358,7 @@ end;
 procedure TFrmPrincipal.esconderForm;
 begin
   Application.Minimize;
-  ticon.HideMainForm;
+//  ticon.HideMainForm;
 end;
 
 function TFrmPrincipal.formatDate(sDatetime : String) : String;
@@ -618,9 +616,9 @@ begin
   FrmPrincipal.Menu := nil;
   sbInicio.Visible := False;
 
-  btnFlutuante.Top := 0;
-  btnFlutuante.Left := 0;
-  btnFlutuante.Visible := True;
+//  btnFlutuante.Top := 0;
+//  btnFlutuante.Left := 0;
+//  btnFlutuante.Visible := True;
 
   SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
   FrmPrincipal.AlphaBlend := True;
@@ -637,7 +635,7 @@ begin
   FrmPrincipal.BorderStyle := bsToolWindow;
   FrmPrincipal.Menu := MainMenu1;
   sbInicio.Visible := True;
-  btnFlutuante.Visible := False;
+//  btnFlutuante.Visible := False;
   inicio;
 
   SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
