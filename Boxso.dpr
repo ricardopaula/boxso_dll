@@ -138,13 +138,12 @@ begin
       jsonObj := TJSONObject(TJSONObject.
         ParseJSONValue(TEncoding.ASCII.GetBytes(StripNonJson(sResponse)), 0));
 
-      sResponse := jsonObj.Get(2).JsonValue.ToString + ';' +
-        jsonObj.Get(1).JsonValue.Value;
+      sResponse := jsonObj.Get(2).JsonValue.ToString;
     except
       on E: exception do
       begin
         ShowMessage('Error - Check payment');
-        sResponse := ';';
+        sResponse := 'false';
       end;
     end;
   finally
